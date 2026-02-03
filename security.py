@@ -19,12 +19,6 @@ from cryptography.fernet import Fernet
 def compute_sha256(data: Union[str, bytes]) -> str:
     """
     Compute a SHA-256 hash for the given data payload.
-
-    Args:
-        data: Input data as string or bytes.
-
-    Returns:
-        Hexadecimal SHA-256 hash string.
     """
     if isinstance(data, str):
         data = data.encode("utf-8")
@@ -39,10 +33,6 @@ def compute_sha256(data: Union[str, bytes]) -> str:
 def generate_key() -> bytes:
     """
     Generate a new Fernet encryption key.
-
-    Note:
-        In a production system, this key should be
-        securely stored and reused across sessions.
     """
     return Fernet.generate_key()
 
@@ -69,14 +59,14 @@ def sanitize_filename(filename: str) -> str:
     """
     Sanitize a filename to prevent directory traversal attacks.
 
-    Only plain filenames are allowed. Path components
-    such as directories are rejected.
-
-    Raises:
-        ValueError if filename is unsafe.
+    Only plain filenames without path components are allowed.
     """
     if not filename or not filename.strip():
         raise ValueError("Filename must be a non-empty string.")
+
+    # Reject path separators explicitly
+    if os.path.sep in filename or os.path.altsep and os.path.altsep in filename:
+        raise ValueError("Invalid filename: path separators detected.")
 
     sanitized = os.path.basename(filename)
 
@@ -89,8 +79,6 @@ def sanitize_filename(filename: str) -> str:
 def save_secure_log(filename: str, data: bytes) -> None:
     """
     Safely save encrypted data to a log file.
-
-    Appends encrypted entries as newline-delimited bytes.
     """
     if not isinstance(data, bytes):
         raise TypeError("Log data must be bytes.")

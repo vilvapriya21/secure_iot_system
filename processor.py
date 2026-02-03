@@ -26,8 +26,8 @@ def profile_execution(func):
     def wrapper(*args, **kwargs):
         start = time.perf_counter()
         result = func(*args, **kwargs)
-        end = time.perf_counter()
-        return result, end - start
+        elapsed = time.perf_counter() - start
+        return result, elapsed
 
     return wrapper
 
@@ -37,15 +37,16 @@ def profile_execution(func):
 class SensorCache:
     """
     Weak reference cache for active sensors.
+    Uses object id to avoid name collisions.
     """
 
     def __init__(self) -> None:
-        self._cache: weakref.WeakValueDictionary[str, Sensor] = (
+        self._cache: weakref.WeakValueDictionary[int, Sensor] = (
             weakref.WeakValueDictionary()
         )
 
     def add(self, sensor: Sensor) -> None:
-        self._cache[sensor.name] = sensor
+        self._cache[id(sensor)] = sensor
 
     def size(self) -> int:
         return len(self._cache)
@@ -76,18 +77,32 @@ class DataProcessor:
         self._buffer.append(value)
         return len(self._buffer) >= self.batch_size
 
+    # -------- Slow Python Implementation (Baseline) -------- #
+
+    @staticmethod
+    def slow_python_stats(values: List[float]) -> Tuple[float, float]:
+        """
+        Intentionally slow loop-based statistics
+        for profiling comparison.
+        """
+        mean = sum(values) / len(values)
+        variance = sum((x - mean) ** 2 for x in values) / len(values)
+        return mean, variance ** 0.5
+
+    # -------- Optimized NumPy Implementation -------- #
+
     @profile_execution
     def process_batch(self) -> Tuple[float, float]:
         """
         Process buffered data using NumPy vectorization.
 
         Returns:
-            (moving_average, standard_deviation)
+            (mean, standard_deviation)
         """
         data = np.array(self._buffer, dtype=np.float64)
 
-        moving_avg = data.mean()
-        std_dev = data.std()
+        mean = data.mean()
+        std = data.std()
 
         self._buffer.clear()
-        return moving_avg, std_dev
+        return mean, std

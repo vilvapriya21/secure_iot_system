@@ -12,6 +12,8 @@ from typing import List, Dict, Generator
 from sensor import Sensor
 
 
+# ---------------- Generator ---------------- #
+
 def sensor_stream() -> Generator[float, None, None]:
     """
     Infinite generator simulating live sensor data.
@@ -20,18 +22,28 @@ def sensor_stream() -> Generator[float, None, None]:
         yield random.uniform(0.0, 100.0)
 
 
-async def read_sensor(sensor: Sensor) -> float:
+# ---------------- Async Readers ---------------- #
+
+async def read_sensor(sensor: Sensor, stream: Generator[float, None, None]) -> float:
     """
-    Read a single data point from a sensor asynchronously.
+    Read a single data point from a sensor asynchronously,
+    pulling values from a shared generator.
     """
-    return await sensor.read_data()
+    await asyncio.sleep(random.uniform(0.01, 0.05))
+    return next(stream)
 
 
 async def collect_once(sensors: List[Sensor]) -> Dict[str, float]:
     """
     Collect one reading from each sensor concurrently.
     """
-    tasks = [read_sensor(sensor) for sensor in sensors]
+    stream = sensor_stream()
+
+    tasks = [
+        read_sensor(sensor, stream)
+        for sensor in sensors
+    ]
+
     results = await asyncio.gather(*tasks)
 
     return {
@@ -48,7 +60,7 @@ async def sensor_loop(
     """
     Run concurrent sensor reads for a fixed number of iterations.
     """
-    snapshots = []
+    snapshots: List[Dict[str, float]] = []
 
     for _ in range(iterations):
         snapshot = await collect_once(sensors)

@@ -37,17 +37,11 @@ class SensorFactory:
         normalized = sensor_type.strip().lower()
         registry = SensorRegistryMeta.get_registry()
 
-        for sensor_cls in registry.values():
-            # Check the SENSOR_NAME class attribute
-            sensor_name = getattr(sensor_cls, "SENSOR_NAME", None)
-            if sensor_name and sensor_name.lower() == normalized:
-                return sensor_cls()
+        if normalized not in registry:
+            valid = ", ".join(registry.keys())
+            raise ValueError(
+                f"Unknown sensor type '{sensor_type}'. "
+                f"Available sensors: {valid}"
+            )
 
-        # Build a list of valid sensor names for error message
-        valid = ", ".join(
-            cls.SENSOR_NAME for cls in registry.values() if hasattr(cls, "SENSOR_NAME")
-        )
-        raise ValueError(
-            f"Unknown sensor type '{sensor_type}'. "
-            f"Available sensors: {valid}"
-        )
+        return registry[normalized]()

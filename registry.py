@@ -10,6 +10,7 @@ import inspect
 from typing import Dict, Type
 from abc import ABCMeta
 
+
 class SensorRegistryMeta(ABCMeta):
     """
     Metaclass that auto-registers concrete Sensor subclasses.
@@ -25,8 +26,12 @@ class SensorRegistryMeta(ABCMeta):
 
         # Register only concrete (non-abstract) classes
         if not inspect.isabstract(cls):
-            SensorRegistryMeta._registry[name] = cls
-    
+            sensor_name = getattr(cls, "SENSOR_NAME", None)
+
+            # Prefer logical sensor name if available
+            key = sensor_name.lower() if sensor_name else name
+            mcls._registry[key] = cls
+
         return cls
 
     @classmethod
@@ -35,6 +40,6 @@ class SensorRegistryMeta(ABCMeta):
         Return the sensor class registry.
 
         Returns:
-            Dictionary mapping class names to sensor classes.
+            Dictionary mapping sensor names to sensor classes.
         """
         return dict(mcls._registry)
