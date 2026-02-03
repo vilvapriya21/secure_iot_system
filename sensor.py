@@ -22,7 +22,12 @@ class Sensor(abc.ABC, metaclass=SensorRegistryMeta):
     """
 
     def __init__(self, name: str) -> None:
-        """Initialize the sensor with its logical name."""
+        """
+        Initialize the sensor with its logical name.
+
+        Args:
+            name (str): Human-readable sensor name.
+        """
         self.name = name
         self._calibrated = False
         self._stream: Generator[float, None, None] = self._sensor_stream()
@@ -56,18 +61,48 @@ class Sensor(abc.ABC, metaclass=SensorRegistryMeta):
         """
         if not self._calibrated:
             raise RuntimeError(
-                f"{self.__class__.__name__} must be calibrated before reading data."
+                f"{self.__class__.__name__} must be calibrated "
+                "before reading data."
             )
 
     def _sensor_stream(self) -> Generator[float, None, None]:
-        """Yield an infinite stream of simulated readings."""
+        """
+        Yield an infinite stream of simulated readings.
+
+        Yields:
+            float: Random sensor value.
+        """
         while True:
             yield random.uniform(0.0, 100.0)
+
+    async def _safe_read(self) -> float:
+        """
+        Safely read from the sensor stream with edge-case handling.
+
+        Returns:
+            float: Valid sensor reading or safe fallback value.
+        """
+        try:
+            value = next(self._stream)
+
+            if value is None or not isinstance(value, (int, float)):
+                raise ValueError("Invalid sensor reading")
+
+            return float(value)
+
+        except StopIteration:
+            # Stream unexpectedly exhausted
+            return 0.0
+
+        except Exception as exc:
+            # Catch-all to avoid crashing async pipeline
+            print(f"[{self.__class__.__name__} Error] {exc}")
+            return 0.0
 
 
 class TempSensor(Sensor):
     """Temperature sensor implementation."""
-    
+
     SENSOR_NAME = "temperature"
 
     def __init__(self) -> None:
@@ -76,7 +111,7 @@ class TempSensor(Sensor):
     async def read_data(self) -> float:
         self._ensure_calibrated()
         await asyncio.sleep(random.uniform(0.01, 0.05))
-        return next(self._stream)
+        return await self._safe_read()
 
     def calibrate(self) -> None:
         self._calibrated = True
@@ -93,7 +128,7 @@ class PressureSensor(Sensor):
     async def read_data(self) -> float:
         self._ensure_calibrated()
         await asyncio.sleep(random.uniform(0.01, 0.05))
-        return next(self._stream)
+        return await self._safe_read()
 
     def calibrate(self) -> None:
         self._calibrated = True
@@ -103,14 +138,14 @@ class VibrationSensor(Sensor):
     """Vibration sensor implementation."""
 
     SENSOR_NAME = "vibration"
-    
+
     def __init__(self) -> None:
         super().__init__("Vibration")
 
     async def read_data(self) -> float:
         self._ensure_calibrated()
         await asyncio.sleep(random.uniform(0.01, 0.05))
-        return next(self._stream)
+        return await self._safe_read()
 
     def calibrate(self) -> None:
         self._calibrated = True

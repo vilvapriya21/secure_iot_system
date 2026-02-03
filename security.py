@@ -14,7 +14,7 @@ from typing import Union
 from cryptography.fernet import Fernet
 
 
-# ---------------- Hashing ---------------- #
+# Hashing
 
 def compute_sha256(data: Union[str, bytes]) -> str:
     """
@@ -28,7 +28,7 @@ def compute_sha256(data: Union[str, bytes]) -> str:
     return hasher.hexdigest()
 
 
-# ---------------- Encryption ---------------- #
+# Encryption
 
 def generate_key() -> bytes:
     """
@@ -53,7 +53,7 @@ def decrypt_alert(token: bytes, key: bytes) -> str:
     return fernet.decrypt(token).decode("utf-8")
 
 
-# ---------------- Secure File Handling ---------------- #
+# Secure File Handling
 
 def sanitize_filename(filename: str) -> str:
     """
@@ -65,7 +65,10 @@ def sanitize_filename(filename: str) -> str:
         raise ValueError("Filename must be a non-empty string.")
 
     # Reject path separators explicitly
-    if os.path.sep in filename or os.path.altsep and os.path.altsep in filename:
+    if (
+        os.path.sep in filename
+        or (os.path.altsep and os.path.altsep in filename)
+    ):
         raise ValueError("Invalid filename: path separators detected.")
 
     sanitized = os.path.basename(filename)

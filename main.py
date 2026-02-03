@@ -16,7 +16,13 @@ from config import SystemConfig
 from detector import AnomalyDetector, ZScoreStrategy
 from data_engine import sensor_loop
 from processor import DataProcessor, SensorCache
-from security import compute_sha256, encrypt_alert, decrypt_alert, generate_key, save_secure_log
+from security import (
+    compute_sha256,
+    encrypt_alert,
+    decrypt_alert,
+    generate_key,
+    save_secure_log,
+)
 
 
 def build_sensors(count: int):
@@ -34,7 +40,11 @@ def build_sensors(count: int):
 
 async def run_system():
     config = SystemConfig()
-    print(f"Starting system | sensors={config.max_sensors}, buffer={config.buffer_size}")
+    print(
+        f"Starting system | "
+        f"sensors={config.max_sensors}, "
+        f"buffer={config.buffer_size}"
+    )
 
     # WeakRef cache
     cache = SensorCache()

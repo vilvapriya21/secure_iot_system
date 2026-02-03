@@ -12,7 +12,7 @@ from typing import List, Dict, Generator
 from sensor import Sensor
 
 
-# ---------------- Generator ---------------- #
+# Generator
 
 def sensor_stream() -> Generator[float, None, None]:
     """
@@ -22,9 +22,12 @@ def sensor_stream() -> Generator[float, None, None]:
         yield random.uniform(0.0, 100.0)
 
 
-# ---------------- Async Readers ---------------- #
+# Async Readers
 
-async def read_sensor(sensor: Sensor, stream: Generator[float, None, None]) -> float:
+async def read_sensor(
+    sensor: Sensor,
+    stream: Generator[float, None, None],
+) -> float:
     """
     Read a single data point from a sensor asynchronously,
     pulling values from a shared generator.

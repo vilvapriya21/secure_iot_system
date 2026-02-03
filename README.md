@@ -65,7 +65,10 @@ Run the System
 python main.py
 Run Tests
 pytest -v
+
+
 Performance Proof
+
 NumPy vs Python Loop
 The system processes sensor batches using NumPy vectorization.
 
