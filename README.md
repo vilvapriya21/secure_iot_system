@@ -1,6 +1,6 @@
 # Secure IoT Anomaly Detection System
 
-This project implements a secure, asynchronous IoT anomaly detection system using advanced Python concepts, object-oriented design patterns, and secure coding practices.
+A secure, asynchronous IoT anomaly detection system built with advanced Python concepts, object-oriented design patterns, and secure coding practices.
 
 ---
 
@@ -39,6 +39,7 @@ This project implements a secure, asynchronous IoT anomaly detection system usin
 
 ## Project Structure
 
+```
 secure_iot_system/
 ├── main.py
 ├── requirements.txt
@@ -51,60 +52,75 @@ secure_iot_system/
 ├── detector.py
 ├── data_engine.py
 ├── processor.py
-├── security.py
-
+└── security.py
+```
 
 ---
 
 ## How to Run
 
 ### Install Dependencies
+
 ```bash
 pip install -r requirements.txt
-Run the System
+```
+
+### Run the System
+
+```bash
 python main.py
-Run Tests
+```
+
+### Run Tests
+
+```bash
 pytest -v
+```
 
+---
 
-Performance Proof
+## Performance Proof
 
-NumPy vs Python Loop
+### NumPy vs Python Loop
+
 The system processes sensor batches using NumPy vectorization.
 
-NumPy computation time is consistently faster than a manual Python loop.
+- NumPy computation time is consistently faster than a manual Python loop.
+- Both methods produce identical mean and standard deviation values.
+- This is validated through automated unit tests.
 
-Both methods produce identical mean and standard deviation values.
+### Profiling
 
-This is validated through automated unit tests.
-
-Profiling
 A profiling decorator is applied to batch processing functions to measure execution time and identify slow operations.
 
-Memory Management Proof
-Sensors are stored using weak references.
+---
 
-After deleting sensor objects and forcing garbage collection, the cache is automatically cleaned.
+## Memory Management Proof
 
-Verified using gc.collect() and unit tests confirming cache size reaches zero.
+- Sensors are stored using weak references.
+- After deleting sensor objects and forcing garbage collection, the cache is automatically cleaned.
+- Verified using `gc.collect()` and unit tests confirming cache size reaches zero.
 
-Security Validation
-SHA-256 hashes ensure data integrity before storage.
+---
 
-Sensitive alerts are encrypted and decrypted using Fernet symmetric encryption.
+## Security Validation
 
-Filename sanitization blocks directory traversal attacks.
+- SHA-256 hashes ensure data integrity before storage.
+- Sensitive alerts are encrypted and decrypted using Fernet symmetric encryption.
+- Filename sanitization blocks directory traversal attacks.
 
-Deployment
-A Dockerfile is provided to containerize the application.
+---
 
-A Kubernetes deployment file (deployment.yaml) defines 3 replicas for scalable execution.
+## Deployment
 
-Test Coverage
-16+ pytest unit tests
+- A **Dockerfile** is provided to containerize the application.
+- A **Kubernetes** deployment file (`deployment.yaml`) defines 3 replicas for scalable execution.
 
-Async tests validated using pytest-asyncio
+---
 
-All major components covered
+## Test Coverage
 
-All tests pass successfully
+- 16+ pytest unit tests
+- Async tests validated using `pytest-asyncio`
+- All major components covered
+- All tests pass successfully
