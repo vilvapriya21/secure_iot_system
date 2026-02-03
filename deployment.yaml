@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: secure-iot-system
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: secure-iot
+  template:
+    metadata:
+      labels:
+        app: secure-iot
+    spec:
+      containers:
+        - name: secure-iot-container
+          image: secure-iot-system:latest
+          imagePullPolicy: IfNotPresent
+          resources:
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
