@@ -6,11 +6,11 @@ statistical analysis, weak reference caching, and
 execution time profiling.
 """
 
-import time
+import timeit
+from functools import wraps
 import weakref
 import gc
 from typing import List, Tuple
-from functools import wraps
 
 import numpy as np
 
@@ -21,16 +21,17 @@ from sensor import Sensor
 
 def profile_execution(func):
     """
-    Decorator to measure execution time of a function.
+    Decorator to measure execution time of a function
+    using timeit.default_timer.
 
     Returns a tuple of (result, elapsed_time).
     """
 
     @wraps(func)
     def wrapper(*args, **kwargs):
-        start = time.perf_counter()
+        start = timeit.default_timer()
         result = func(*args, **kwargs)
-        elapsed = time.perf_counter() - start
+        elapsed = timeit.default_timer() - start
         return result, elapsed
 
     return wrapper
