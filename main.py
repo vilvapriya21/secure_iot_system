@@ -10,6 +10,7 @@ Responsibilities:
 """
 
 import asyncio
+import logging
 
 from factory import SensorFactory
 from config import SystemConfig
@@ -24,6 +25,14 @@ from security import (
     save_secure_log,
 )
 
+# Logging Configuration
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s | %(levelname)s | %(name)s | %(message)s",
+)
+
+logger = logging.getLogger(__name__)
+
 
 def build_sensors(count: int):
     """Create sensors using Factory pattern."""
@@ -35,15 +44,16 @@ def build_sensors(count: int):
         sensor.calibrate()
         sensors.append(sensor)
 
+    logger.info("Built and calibrated %d sensors", count)
     return sensors
 
 
 async def run_system():
     config = SystemConfig()
-    print(
-        f"Starting system | "
-        f"sensors={config.max_sensors}, "
-        f"buffer={config.buffer_size}"
+    logger.info(
+        "Starting system | sensors=%d | buffer=%d",
+        config.max_sensors,
+        config.buffer_size,
     )
 
     # WeakRef cache
@@ -54,6 +64,8 @@ async def run_system():
     for s in sensors:
         cache.add(s)
 
+    logger.info("Sensors added to weak reference cache")
+
     # Processing & detection
     processor = DataProcessor(batch_size=config.buffer_size)
     detector = AnomalyDetector(
@@ -62,8 +74,10 @@ async def run_system():
 
     # Security
     key = generate_key()
+    logger.info("Security key generated")
 
     # Async data collection
+    logger.info("Starting async sensor data collection")
     snapshots = await sensor_loop(sensors, iterations=10)
 
     for snapshot in snapshots:
@@ -76,7 +90,14 @@ async def run_system():
             data_str = ",".join(f"{v:.2f}" for v in snapshot.values())
             data_hash = compute_sha256(data_str.encode())
 
-            print(f"Batch mean={mean:.2f}, std={std:.2f}, time={elapsed:.6f}s")
+            logger.info(
+                "Batch processed | mean=%.2f | std=%.2f | time=%.6fs",
+                mean,
+                std,
+                elapsed,
+            )
+
+            # Keep prints for assessment proof
             print(f"Integrity hash: {data_hash}")
 
             if detector.detect(snapshot.values()):
@@ -84,16 +105,18 @@ async def run_system():
                 encrypted = encrypt_alert(alert, key)
                 save_secure_log("alerts.log", encrypted)
 
-                # Verification
+                logger.warning("Anomaly detected and encrypted alert stored")
+
+                # Verification proof
                 decrypted = decrypt_alert(encrypted, key)
                 print("Decrypted alert check:", decrypted)
 
     # WeakRef demonstration
-    print("Sensors before GC:", cache.size())
+    logger.info("Sensors before GC: %d", cache.size())
     del sensors
-    print("Sensors after GC:", cache.force_gc())
+    logger.info("Sensors after GC: %d", cache.force_gc())
 
-    print("System execution completed successfully.")
+    logger.info("System execution completed successfully")
 
 
 def main():
