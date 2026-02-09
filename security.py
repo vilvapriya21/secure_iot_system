@@ -1,10 +1,5 @@
 """
-Security utilities for the IoT anomaly detection system.
-
-This module provides:
-- SHA-256 hashing for data integrity
-- Fernet encryption for sensitive alerts
-- Secure file path sanitization to prevent directory traversal
+Security helpers: hashing, encryption, and safe file handling.
 """
 
 import hashlib

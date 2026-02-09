@@ -1,9 +1,5 @@
 """
-Sensor abstractions and concrete implementations.
-
-This module defines the base Sensor contract and
-provides simulated sensor implementations used
-by the IoT anomaly detection system.
+Sensor base class and simulated sensor implementations.
 """
 
 import abc
@@ -34,12 +30,7 @@ class Sensor(abc.ABC, metaclass=SensorRegistryMeta):
 
     @abc.abstractmethod
     async def read_data(self) -> float:
-        """
-        Return a single sensor reading asynchronously.
-
-        Raises:
-            RuntimeError: If the sensor is not calibrated.
-        """
+        """Read one sensor value asynchronously."""
         raise NotImplementedError
 
     @abc.abstractmethod

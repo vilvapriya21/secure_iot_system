@@ -1,9 +1,5 @@
 """
-System configuration singleton.
-
-This module defines a singleton configuration class
-that provides global, immutable settings for the
-IoT anomaly detection system.
+Global system configuration (singleton).
 """
 
 

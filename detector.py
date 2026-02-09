@@ -1,8 +1,5 @@
 """
-Anomaly detection strategies and controller.
-
-This module implements the Strategy design pattern
-to allow interchangeable anomaly detection algorithms.
+Anomaly detection logic using interchangeable strategies.
 """
 
 import abc

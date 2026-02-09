@@ -95,13 +95,7 @@ class DataProcessor:
 
     @staticmethod
     def slow_python_stats(values: List[float]) -> Tuple[float, float]:
-        """
-        Intentionally slow loop-based statistics
-        for profiling comparison.
-
-        Raises:
-            ValueError: If values list is empty.
-        """
+        """Slow Python implementation used for comparison."""
         if not values:
             raise ValueError("Values list cannot be empty.")
 

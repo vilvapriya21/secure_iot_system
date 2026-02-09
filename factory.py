@@ -1,8 +1,5 @@
 """
-Sensor factory implementation.
-
-Creates sensor instances based on logical
-sensor type strings using the SensorRegistryMeta registry.
+Factory for creating sensors using registered types.
 """
 
 from sensor import Sensor

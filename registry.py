@@ -1,9 +1,5 @@
 """
-Sensor registry metaclass.
-
-This module provides a metaclass that automatically
-registers all concrete Sensor implementations
-at class creation time.
+Sensor registry metaclass to auto-register sensor implementations.
 """
 
 import inspect

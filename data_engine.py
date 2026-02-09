@@ -1,8 +1,5 @@
 """
-Asynchronous data engine for sensor simulation.
-
-This module coordinates concurrent sensor data
-collection using asyncio, async/await, and generators.
+Async utilities for collecting sensor data.
 """
 
 import asyncio

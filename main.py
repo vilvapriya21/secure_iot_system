@@ -1,12 +1,5 @@
 """
-Main entry point for the Secure IoT Anomaly Detection System.
-
-Responsibilities:
-- Build sensors using Factory
-- Run async sensor data collection
-- Process data in NumPy batches
-- Detect anomalies via Strategy pattern
-- Secure alerts with hashing + encryption
+Main entry point for running the IoT simulation.
 """
 
 import asyncio
